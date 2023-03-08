@@ -1,7 +1,9 @@
 from django.shortcuts import render
 from rest_framework import viewsets
 from rest_framework import serializers
+from rest_framework.exceptions import MethodNotAllowed
 from django.core.exceptions import PermissionDenied
+from django.shortcuts import get_object_or_404
 
 from posts.models import Post, Group, Comment, User
 from .serializers import PostSerializer, GroupSerializer, CommentSerializer
@@ -27,7 +29,12 @@ class PostViewSet(viewsets.ModelViewSet):
 
 class GroupViewSet(viewsets.ModelViewSet):
     queryset = Group.objects.all()
-    serializer_class = GroupSerializer 
+    serializer_class = GroupSerializer
+
+    def perform_create(self, serializer):
+        if not User.objects.get(username=self.request.user).is_superuser:
+            raise MethodNotAllowed("Недостаточно прав для создания группы")
+        serializer.save()
 
 
 class CommentViewSet(viewsets.ModelViewSet):
