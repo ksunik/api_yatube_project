@@ -1,12 +1,10 @@
-from django.shortcuts import render
-from rest_framework import viewsets
-from rest_framework import serializers
-from rest_framework.exceptions import MethodNotAllowed
 from django.core.exceptions import PermissionDenied
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
+from posts.models import Comment, Group, Post, User
+from rest_framework import serializers, viewsets
+from rest_framework.exceptions import MethodNotAllowed
 
-from posts.models import Post, Group, Comment, User
-from .serializers import PostSerializer, GroupSerializer, CommentSerializer
+from .serializers import CommentSerializer, GroupSerializer, PostSerializer
 
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -27,7 +25,7 @@ class PostViewSet(viewsets.ModelViewSet):
         instance.delete()
 
 
-class GroupViewSet(viewsets.ModelViewSet):
+class GroupViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
 
